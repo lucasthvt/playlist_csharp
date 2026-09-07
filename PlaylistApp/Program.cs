@@ -21,19 +21,21 @@ while (running)
         // ── Bibliothèque ────────────────────────────────────────────────────
         case "1": ListAllSongs();       break;
         case "2": SearchSongs();        break;
-        case "3": AddNewSong();         break;
-        case "4": DeleteSong();         break;
+        case "3": SearchSongsByGenre(); break;
+        case "4": AddNewSong();         break;
+        case "5": DeleteSong();         break;
 
         // ── Playlists ───────────────────────────────────────────────────────
-        case "5": ListAllPlaylists();   break;
-        case "6": ViewPlaylist();       break;
-        case "7": CreerPlaylist();     break;
-        case "8": AddSongToPlaylist();  break;
-        case "9": RemoveSongFromPlaylist(); break;
-        case "10": ShufflePlaylist();   break;
+        case "6": ListAllPlaylists();   break;
+        case "7": ViewPlaylist();       break;
+        case "8": CreerPlaylist();     break;
+        case "9": AddSongToPlaylist();  break;
+        case "10": RemoveSongFromPlaylist(); break;
+        case "11": ShufflePlaylist();   break;
+        case "12": SortPlaylistByDuration(); break;
 
         // ── Statistiques / Quitter ──────────────────────────────────────────
-        case "11": library.DisplayStats(); break;
+        case "13": library.DisplayStats(); break;
         case "0":
             Console.WriteLine("\n👋  À bientôt !\n");
             running = false;
@@ -75,17 +77,19 @@ void ShowMainMenu()
     Console.WriteLine("  📚 Bibliothèque");
     Console.WriteLine("   1. Lister toutes les chansons");
     Console.WriteLine("   2. Rechercher une chanson");
-    Console.WriteLine("   3. Ajouter une chanson");
-    Console.WriteLine("   4. Supprimer une chanson");
+    Console.WriteLine("   3. Rechercher par genre");
+    Console.WriteLine("   4. Ajouter une chanson");
+    Console.WriteLine("   5. Supprimer une chanson");
     Console.WriteLine("\n  🎵 Playlists");
-    Console.WriteLine("   5. Lister toutes les playlists");
-    Console.WriteLine("   6. Afficher une playlist");
-    Console.WriteLine("   7. Créer une playlist");
-    Console.WriteLine("   8. Ajouter une chanson à une playlist");
-    Console.WriteLine("   9. Retirer une chanson d'une playlist");
-    Console.WriteLine("  10. Mélanger une playlist (shuffle)");
+    Console.WriteLine("   6. Lister toutes les playlists");
+    Console.WriteLine("   7. Afficher une playlist");
+    Console.WriteLine("   8. Créer une playlist");
+    Console.WriteLine("   9. Ajouter une chanson à une playlist");
+    Console.WriteLine("  10. Retirer une chanson d'une playlist");
+    Console.WriteLine("  11. Mélanger une playlist (shuffle)");
+    Console.WriteLine("  12. Trier une playlist par durée");
     Console.WriteLine("\n  📊 Autre");
-    Console.WriteLine("  11. Statistiques");
+    Console.WriteLine("  13. Statistiques");
     Console.WriteLine("   0. Quitter");
     Console.Write("\n▶  Votre choix : ");
 }
@@ -106,6 +110,17 @@ void SearchSongs()
     string query = Console.ReadLine() ?? "";
     var results = library.SearchSongs(query).ToList();
     Console.WriteLine($"\n  {results.Count} résultat(s) pour « {query} » :");
+    Console.WriteLine(new string('─', 70));
+    if (results.Count == 0) { Console.WriteLine("  Aucun résultat."); return; }
+    foreach (var s in results) Console.WriteLine($"  {s}");
+}
+
+void SearchSongsByGenre()
+{
+    Console.Write("\n🎼 Genre à rechercher : ");
+    string genre = Console.ReadLine() ?? "";
+    var results = library.SearchSongsByGenre(genre).ToList();
+    Console.WriteLine($"\n  {results.Count} résultat(s) pour le genre « {genre} » :");
     Console.WriteLine(new string('─', 70));
     if (results.Count == 0) { Console.WriteLine("  Aucun résultat."); return; }
     foreach (var s in results) Console.WriteLine($"  {s}");
@@ -197,5 +212,16 @@ void ShufflePlaylist()
     if (pl is null) { Console.WriteLine("  ❌  Playlist introuvable."); return; }
     pl.Melanger();
     Console.WriteLine($"  ✅  Playlist « {pl.Nom} » mélangée !");
+    pl.Display();
+}
+
+void SortPlaylistByDuration()
+{
+    Console.Write("\n⏱️  ID de la playlist à trier : ");
+    if (!int.TryParse(Console.ReadLine(), out int id)) { Console.WriteLine("ID invalide."); return; }
+    var pl = library.GetPlaylist(id);
+    if (pl is null) { Console.WriteLine("  ❌  Playlist introuvable."); return; }
+    pl.TrierParDuree();
+    Console.WriteLine($"  ✅  Playlist « {pl.Nom} » triée par durée !");
     pl.Display();
 }

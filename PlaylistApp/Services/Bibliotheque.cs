@@ -42,6 +42,9 @@ public class Bibliotheque
             s.Artiste.Contains(query, StringComparison.OrdinalIgnoreCase) ||
             s.Album.Contains(query, StringComparison.OrdinalIgnoreCase));
 
+    public IEnumerable<Chanson> SearchSongsByGenre(string genre)
+        => _chansons.Values.Where(s => s.Genre.Equals(genre, StringComparison.OrdinalIgnoreCase));
+
     public bool DeleteSong(int id) => _chansons.Remove(id);
 
     // ════════════════════════ GESTION DES PLAYLISTS ══════════════════════════

@@ -13,6 +13,7 @@ public class Chanson
     public int    DureeSecondes { get; set; }          // durée en secondes
     public string Genre    { get; set; } = string.Empty;
     public int    Annee     { get; set; }
+    public int    Note    { get; set; } = 3;
 
     // ── Constructeur ────────────────────────────────────────────────────────
     public Chanson() { }
@@ -39,5 +40,5 @@ public class Chanson
     }
 
     public override string ToString()
-        => $"[{Id:D3}] {Titre} – {Artiste} | {Album} ({Annee}) | {DureeFormatee()} | {Genre}";
+        => $"[{Id:D3}] {Titre} – {Artiste} | {Album} ({Annee}) | {DureeFormatee()} | {Genre} | ★ {Note}";
 }
