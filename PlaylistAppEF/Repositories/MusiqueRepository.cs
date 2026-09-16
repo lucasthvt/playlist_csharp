@@ -32,12 +32,15 @@ public class MusiqueRepository
             .OrderBy(c => c.Artiste)
             .ToListAsync();
 
-    /// <summary>Chansons filtrées par genre.</summary>
-    public async Task<List<Chanson>> ObtenirParGenreAsync(string genre)
+    /// <summary>Chansons filtrées par genre, triées par note décroissante.</summary>
+    public async Task<List<Chanson>> ParGenreAsync(string genre)
         => await _ctx.Chansons
             .Where(c => c.Genre == genre)
             .OrderByDescending(c => c.Note)
             .ToListAsync();
+
+    public Task<List<Chanson>> ObtenirParGenreAsync(string genre)
+        => ParGenreAsync(genre);
 
     /// <summary>Top N chansons les mieux notées.</summary>
     public async Task<List<Chanson>> TopChansonsAsync(int n = 5)

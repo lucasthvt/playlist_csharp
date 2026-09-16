@@ -111,6 +111,7 @@ public class ChansonsController(
         existant.Artiste        = chanson.Artiste;
         existant.Album          = chanson.Album;
         existant.Genre          = chanson.Genre;
+        existant.Label          = chanson.Label;
         existant.DureeSecondes  = chanson.DureeSecondes;
         existant.Annee          = chanson.Annee;
         existant.Note           = chanson.Note;

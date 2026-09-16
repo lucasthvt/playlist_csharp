@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlaylistAppEF.Data;
 
@@ -10,115 +11,14 @@ using PlaylistAppEF.Data;
 namespace PlaylistAppEF.Migrations
 {
     [DbContext(typeof(PlaylistContext))]
-    partial class PlaylistContextModelSnapshot : ModelSnapshot
+    [Migration("20260916065431_AjoutLabel")]
+    partial class AjoutLabel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
-
-            modelBuilder.Entity("PlaylistAppEF.Models.Artiste", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreeLe")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Nom")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Pays")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Artistes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreeLe = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Nom = "Queen",
-                            Pays = "Royaume-Uni"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreeLe = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Nom = "Eagles",
-                            Pays = "États-Unis"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreeLe = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Nom = "The Weeknd",
-                            Pays = "Canada"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreeLe = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Nom = "Ed Sheeran",
-                            Pays = "Royaume-Uni"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreeLe = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Nom = "Eminem",
-                            Pays = "États-Unis"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreeLe = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Nom = "Drake",
-                            Pays = "Canada"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreeLe = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Nom = "Nirvana",
-                            Pays = "États-Unis"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreeLe = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Nom = "Adele",
-                            Pays = "Royaume-Uni"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreeLe = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Nom = "Michael Jackson",
-                            Pays = "États-Unis"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CreeLe = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Nom = "Daft Punk",
-                            Pays = "France"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CreeLe = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Nom = "Bee Gees",
-                            Pays = "Royaume-Uni"
-                        });
-                });
 
             modelBuilder.Entity("PlaylistAppEF.Models.Chanson", b =>
                 {
@@ -141,9 +41,6 @@ namespace PlaylistAppEF.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("TEXT");
-
-                    b.Property<int?>("ArtisteId")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("DureeSecondes")
                         .HasColumnType("INTEGER");
@@ -171,8 +68,6 @@ namespace PlaylistAppEF.Migrations
                     b.HasIndex("Artiste")
                         .HasDatabaseName("IX_Chansons_Artiste");
 
-                    b.HasIndex("ArtisteId");
-
                     b.HasIndex("Genre")
                         .HasDatabaseName("IX_Chansons_Genre");
 
@@ -186,7 +81,6 @@ namespace PlaylistAppEF.Migrations
                             Album = "A Night at the Opera",
                             Annee = 1975,
                             Artiste = "Queen",
-                            ArtisteId = 1,
                             DureeSecondes = 354,
                             Genre = "Rock",
                             Label = "",
@@ -200,7 +94,6 @@ namespace PlaylistAppEF.Migrations
                             Album = "Hotel California",
                             Annee = 1977,
                             Artiste = "Eagles",
-                            ArtisteId = 2,
                             DureeSecondes = 391,
                             Genre = "Rock",
                             Label = "",
@@ -214,7 +107,6 @@ namespace PlaylistAppEF.Migrations
                             Album = "After Hours",
                             Annee = 2019,
                             Artiste = "The Weeknd",
-                            ArtisteId = 3,
                             DureeSecondes = 200,
                             Genre = "Pop",
                             Label = "",
@@ -228,7 +120,6 @@ namespace PlaylistAppEF.Migrations
                             Album = "÷ (Divide)",
                             Annee = 2017,
                             Artiste = "Ed Sheeran",
-                            ArtisteId = 4,
                             DureeSecondes = 234,
                             Genre = "Pop",
                             Label = "",
@@ -242,7 +133,6 @@ namespace PlaylistAppEF.Migrations
                             Album = "8 Mile Soundtrack",
                             Annee = 2002,
                             Artiste = "Eminem",
-                            ArtisteId = 5,
                             DureeSecondes = 326,
                             Genre = "Rap",
                             Label = "",
@@ -256,7 +146,6 @@ namespace PlaylistAppEF.Migrations
                             Album = "Scorpion",
                             Annee = 2018,
                             Artiste = "Drake",
-                            ArtisteId = 6,
                             DureeSecondes = 198,
                             Genre = "Rap",
                             Label = "",
@@ -270,7 +159,6 @@ namespace PlaylistAppEF.Migrations
                             Album = "Nevermind",
                             Annee = 1991,
                             Artiste = "Nirvana",
-                            ArtisteId = 7,
                             DureeSecondes = 301,
                             Genre = "Rock",
                             Label = "",
@@ -284,7 +172,6 @@ namespace PlaylistAppEF.Migrations
                             Album = "21",
                             Annee = 2010,
                             Artiste = "Adele",
-                            ArtisteId = 8,
                             DureeSecondes = 228,
                             Genre = "Soul",
                             Label = "",
@@ -298,7 +185,6 @@ namespace PlaylistAppEF.Migrations
                             Album = "Thriller",
                             Annee = 1982,
                             Artiste = "Michael Jackson",
-                            ArtisteId = 9,
                             DureeSecondes = 294,
                             Genre = "Pop",
                             Label = "",
@@ -312,7 +198,6 @@ namespace PlaylistAppEF.Migrations
                             Album = "Discovery",
                             Annee = 2000,
                             Artiste = "Daft Punk",
-                            ArtisteId = 10,
                             DureeSecondes = 321,
                             Genre = "Électro",
                             Label = "",
@@ -326,7 +211,6 @@ namespace PlaylistAppEF.Migrations
                             Album = "Random Access Memories",
                             Annee = 2013,
                             Artiste = "Daft Punk",
-                            ArtisteId = 10,
                             DureeSecondes = 369,
                             Genre = "Électro",
                             Label = "",
@@ -340,7 +224,6 @@ namespace PlaylistAppEF.Migrations
                             Album = "Saturday Night Fever",
                             Annee = 1977,
                             Artiste = "Bee Gees",
-                            ArtisteId = 11,
                             DureeSecondes = 245,
                             Genre = "Disco",
                             Label = "",
@@ -499,16 +382,6 @@ namespace PlaylistAppEF.Migrations
                         });
                 });
 
-            modelBuilder.Entity("PlaylistAppEF.Models.Chanson", b =>
-                {
-                    b.HasOne("PlaylistAppEF.Models.Artiste", "ArtisteRelation")
-                        .WithMany("Chansons")
-                        .HasForeignKey("ArtisteId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("ArtisteRelation");
-                });
-
             modelBuilder.Entity("PlaylistAppEF.Models.PlaylistChanson", b =>
                 {
                     b.HasOne("PlaylistAppEF.Models.Chanson", "Chanson")
@@ -526,11 +399,6 @@ namespace PlaylistAppEF.Migrations
                     b.Navigation("Chanson");
 
                     b.Navigation("Playlist");
-                });
-
-            modelBuilder.Entity("PlaylistAppEF.Models.Artiste", b =>
-                {
-                    b.Navigation("Chansons");
                 });
 
             modelBuilder.Entity("PlaylistAppEF.Models.Chanson", b =>

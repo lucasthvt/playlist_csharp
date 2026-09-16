@@ -90,6 +90,22 @@ public class RepositoryTests
         Assert.All(resultats, c => Assert.Equal("Daft Punk", c.Artiste));
     }
 
+    [Fact(DisplayName = "ParGenre – filtre et trie par note décroissante")]
+    public async Task ParGenreAsync_FiltreEtTrieParNote()
+    {
+        using var ctx = CreerContextTest();
+        var repo = new MusiqueRepository(ctx);
+        await repo.AjouterChansonAsync(new Chanson { Titre="Rock 4", Artiste="A", Album="A", DureeSecondes=100, Genre="Rock", Annee=2020, Note=4 });
+        await repo.AjouterChansonAsync(new Chanson { Titre="Pop 5", Artiste="B", Album="B", DureeSecondes=100, Genre="Pop", Annee=2020, Note=5 });
+        await repo.AjouterChansonAsync(new Chanson { Titre="Rock 5", Artiste="C", Album="C", DureeSecondes=100, Genre="Rock", Annee=2020, Note=5 });
+
+        var resultats = await repo.ParGenreAsync("Rock");
+
+        Assert.Equal(2, resultats.Count);
+        Assert.Equal("Rock 5", resultats[0].Titre);
+        Assert.All(resultats, chanson => Assert.Equal("Rock", chanson.Genre));
+    }
+
     [Fact(DisplayName = "ModifierNote – la note est bien mise à jour")]
     public async Task ModifierNoteAsync_NoteValide_MiseAJour()
     {

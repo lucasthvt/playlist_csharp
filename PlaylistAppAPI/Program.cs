@@ -16,6 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 string dbPath = Path.Combine(
     Environment.GetEnvironmentVariable("DB_PATH") ?? ".",
     "playlist.db");
+string? dbDirectory = Path.GetDirectoryName(dbPath);
+if (!string.IsNullOrEmpty(dbDirectory))
+    Directory.CreateDirectory(dbDirectory);
 
 builder.Services.AddDbContext<PlaylistContext>(opt =>
     opt.UseSqlite($"Data Source={dbPath}",

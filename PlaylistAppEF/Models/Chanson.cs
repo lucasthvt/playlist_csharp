@@ -35,6 +35,13 @@ public class Chanson
     [MaxLength(50)]
     public string Genre { get; set; } = string.Empty;
 
+    [MaxLength(100)]
+    public string Label { get; set; } = string.Empty;
+
+    public int? ArtisteId { get; set; }
+
+    public Artiste? ArtisteRelation { get; set; }
+
     [Range(1900, 2100)]
     public int Annee { get; set; }
 

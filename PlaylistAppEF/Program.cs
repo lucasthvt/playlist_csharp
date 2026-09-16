@@ -34,6 +34,7 @@ while (running)
         case "4": await ModifierNoteAsync();         break;
         case "5": await SupprimerChansonAsync();     break;
         case "6": await TopChansonsAsync();          break;
+        case "15": await ListerParGenreAsync();      break;
 
         // ── Playlists ─────────────────────────────────────────────────────────
         case "7":  await ListerPlaylistsAsync();            break;
@@ -91,6 +92,7 @@ void AfficherMenu()
     Console.WriteLine("   4. Modifier la note d'une chanson");
     Console.WriteLine("   5. Supprimer une chanson");
     Console.WriteLine("   6. Top 5 chansons les mieux notées");
+    Console.WriteLine("  15. Chansons par genre");
     Console.WriteLine("\n  📋 Gestion des playlists");
     Console.WriteLine("   7. Lister toutes les playlists");
     Console.WriteLine("   8. Afficher une playlist");
@@ -132,6 +134,7 @@ async Task AjouterChansonAsync()
     Console.Write("  Artiste : "); string artiste = Console.ReadLine() ?? "";
     Console.Write("  Album   : "); string album   = Console.ReadLine() ?? "";
     Console.Write("  Genre   : "); string genre   = Console.ReadLine() ?? "";
+    Console.Write("  Label   : "); string label   = Console.ReadLine() ?? "";
     Console.Write("  Année   : "); int.TryParse(Console.ReadLine(), out int annee);
     Console.Write("  Durée (s): "); int.TryParse(Console.ReadLine(), out int dur);
     Console.Write("  Note (1-5): "); int.TryParse(Console.ReadLine(), out int note);
@@ -139,7 +142,7 @@ async Task AjouterChansonAsync()
     var c = await repo.AjouterChansonAsync(new Chanson
     {
         Titre = titre, Artiste = artiste, Album = album,
-        Genre = genre, Annee = annee, DureeSecondes = dur,
+        Genre = genre, Label = label, Annee = annee, DureeSecondes = dur,
         Note = Math.Clamp(note, 1, 5)
     });
     Console.WriteLine($"\n  ✅  Chanson ajoutée (ID #{c.Id})");
@@ -242,4 +245,14 @@ void AfficherInfoEF()
     Console.WriteLine("  dotnet ef migrations add NomMigration");
     Console.WriteLine("  dotnet ef database update");
     Console.WriteLine("  dotnet ef migrations list");
+}
+
+async Task ListerParGenreAsync()
+{
+    Console.Write("\n🎼 Genre : ");
+    string genre = Console.ReadLine() ?? "";
+    var chansons = await repo.ParGenreAsync(genre);
+    Console.WriteLine($"\n  {chansons.Count} chanson(s) du genre « {genre} » :");
+    foreach (var chanson in chansons)
+        Console.WriteLine($"  {chanson}");
 }
