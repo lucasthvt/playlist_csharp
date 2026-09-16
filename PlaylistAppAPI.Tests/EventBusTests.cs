@@ -77,4 +77,20 @@ public class EventBusTests
         Assert.Equal("Bohemian Rhapsody", recu.Titre);
         Assert.Equal("Queen", recu.Artiste);
     }
+
+    [Fact(DisplayName = "Historique conserve les événements reçus")]
+    public async Task Historique_conserve_les_evenements()
+    {
+        var bus = NouveauBus();
+        var historique = new HistoriqueHandler();
+        bus.Subscribe<ChansonSupprimeeEvent>(historique.HandleChansonSupprimee);
+        bus.Subscribe<NoteModifieeEvent>(historique.HandleNoteModifiee);
+
+        await bus.PublishAsync(new ChansonSupprimeeEvent(7, "Imagine", DateTime.UtcNow));
+        await bus.PublishAsync(new NoteModifieeEvent(7, "Imagine", 3, 5, DateTime.UtcNow));
+
+        Assert.Equal(2, historique.Evenements.Count);
+        Assert.Contains("Chanson supprimée", historique.Evenements[0]);
+        Assert.Contains("Note modifiée", historique.Evenements[1]);
+    }
 }

@@ -128,6 +128,11 @@ public class ChansonsController(
         var existant = await _ctx.Chansons.FindAsync(id);
         if (existant is null) return NotFound();
 
+        if (chanson.Note < 1 || chanson.Note > 5)
+            return BadRequest(new { message = "La note doit être comprise entre 1 et 5." });
+
+        int ancienneNote = existant.Note;
+
         existant.Titre          = chanson.Titre;
         existant.Artiste        = chanson.Artiste;
         existant.Album          = chanson.Album;
@@ -138,6 +143,13 @@ public class ChansonsController(
         existant.Note           = chanson.Note;
 
         await _ctx.SaveChangesAsync();
+
+        if (ancienneNote != existant.Note)
+        {
+            await _eventBus.PublishAsync(new NoteModifieeEvent(
+                existant.Id, existant.Titre, ancienneNote, existant.Note, DateTime.UtcNow));
+        }
+
         return NoContent();
     }
 

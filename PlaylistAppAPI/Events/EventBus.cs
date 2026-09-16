@@ -64,6 +64,14 @@ public record ChansonSupprimeeEvent(
     string  Titre,
     DateTime Timestamp);
 
+/// <summary>Émis quand la note d'une chanson est modifiée</summary>
+public record NoteModifieeEvent(
+    int     ChansonId,
+    string  Titre,
+    int     AncienneNote,
+    int     NouvelleNote,
+    DateTime Timestamp);
+
 /// <summary>Émis quand une chanson est ajoutée à une playlist</summary>
 public record ChansonAjouteePlaylistEvent(
     int     PlaylistId,
@@ -101,6 +109,14 @@ public class AuditHandler(ILogger<AuditHandler> logger)
         return Task.CompletedTask;
     }
 
+    public Task HandleChansonSupprimee(ChansonSupprimeeEvent e)
+    {
+        logger.LogInformation(
+            "[AUDIT] {Timestamp:HH:mm:ss} | Chanson supprimée : {Titre} (#{Id})",
+            e.Timestamp, e.Titre, e.ChansonId);
+        return Task.CompletedTask;
+    }
+
     public Task HandlePlaylistCreee(PlaylistCreeeEvent e)
     {
         logger.LogInformation(
@@ -119,6 +135,52 @@ public class StatistiquesHandler(ILogger<StatistiquesHandler> logger)
         logger.LogInformation("[STATS] Cache invalidé suite à l'ajout de '{Titre}'", e.Titre);
         return Task.CompletedTask;
     }
+
+    public Task HandleNoteModifiee(NoteModifieeEvent e)
+    {
+        logger.LogInformation(
+            "[STATS] Cache invalidé suite à la modification de note de '{Titre}'",
+            e.Titre);
+        return Task.CompletedTask;
+    }
+}
+
+/// <summary>Conserve les derniers événements en mémoire pour consultation et audit.</summary>
+public class HistoriqueHandler
+{
+    private readonly List<string> _evenements = new();
+    private readonly object _verrou = new();
+
+    public IReadOnlyList<string> Evenements
+    {
+        get
+        {
+            lock (_verrou)
+                return _evenements.ToArray();
+        }
+    }
+
+    public Task HandleChansonAjoutee(ChansonAjouteeEvent e)
+        => Ajouter($"Chanson ajoutée : {e.Titre} (#{e.ChansonId})");
+
+    public Task HandleChansonSupprimee(ChansonSupprimeeEvent e)
+        => Ajouter($"Chanson supprimée : {e.Titre} (#{e.ChansonId})");
+
+    public Task HandleNoteModifiee(NoteModifieeEvent e)
+        => Ajouter($"Note modifiée : {e.Titre}, {e.AncienneNote} -> {e.NouvelleNote}");
+
+    public Task HandleChansonAjouteePlaylist(ChansonAjouteePlaylistEvent e)
+        => Ajouter($"Chanson ajoutée à la playlist : {e.TitreChanson} (#{e.PlaylistId})");
+
+    public Task HandlePlaylistCreee(PlaylistCreeeEvent e)
+        => Ajouter($"Playlist créée : {e.Nom} (#{e.PlaylistId})");
+
+    private Task Ajouter(string description)
+    {
+        lock (_verrou)
+            _evenements.Add(description);
+        return Task.CompletedTask;
+    }
 }
 
 // ── Extension pour enregistrer le bus + les handlers ─────────────────────────
@@ -132,10 +194,18 @@ public static class EventBusExtensions
             var bus     = sp.GetRequiredService<InMemoryEventBus>();
             var audit   = sp.GetRequiredService<AuditHandler>();
             var stats   = sp.GetRequiredService<StatistiquesHandler>();
+            var historique = sp.GetRequiredService<HistoriqueHandler>();
 
             // Abonnements des handlers
             bus.Subscribe<ChansonAjouteeEvent>(audit.HandleChansonAjoutee);
             bus.Subscribe<ChansonAjouteeEvent>(stats.HandleChansonAjoutee);
+            bus.Subscribe<ChansonAjouteeEvent>(historique.HandleChansonAjoutee);
+            bus.Subscribe<ChansonSupprimeeEvent>(audit.HandleChansonSupprimee);
+            bus.Subscribe<ChansonSupprimeeEvent>(historique.HandleChansonSupprimee);
+            bus.Subscribe<NoteModifieeEvent>(stats.HandleNoteModifiee);
+            bus.Subscribe<NoteModifieeEvent>(historique.HandleNoteModifiee);
+            bus.Subscribe<ChansonAjouteePlaylistEvent>(historique.HandleChansonAjouteePlaylist);
+            bus.Subscribe<PlaylistCreeeEvent>(historique.HandlePlaylistCreee);
             bus.Subscribe<ChansonAjouteePlaylistEvent>(audit.HandleChansonAjouteePlaylist);
             bus.Subscribe<PlaylistCreeeEvent>(audit.HandlePlaylistCreee);
 
@@ -143,6 +213,7 @@ public static class EventBusExtensions
         });
         services.AddSingleton<AuditHandler>();
         services.AddSingleton<StatistiquesHandler>();
+        services.AddSingleton<HistoriqueHandler>();
         return services;
     }
 }
