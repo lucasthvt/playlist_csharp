@@ -49,6 +49,24 @@ public class ChansonsController(
         return Ok(chansons);
     }
 
+    // ── GET /api/chansons/top/{n} ────────────────────────────────────────────
+    /// <summary>Récupère les chansons les mieux notées.</summary>
+    [HttpGet("top/{n:int}")]
+    [ProducesResponseType(typeof(IEnumerable<Chanson>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IEnumerable<Chanson>>> GetTop(int n)
+    {
+        if (n < 1) return BadRequest(new { message = "Le nombre de chansons doit être positif." });
+
+        var chansons = await _ctx.Chansons
+            .OrderByDescending(c => c.Note)
+            .ThenBy(c => c.Titre)
+            .Take(n)
+            .ToListAsync();
+
+        return Ok(chansons);
+    }
+
     // ── GET /api/chansons/{id} ────────────────────────────────────────────────
     /// <summary>Récupère une chanson par son identifiant.</summary>
     [HttpGet("{id:int}")]
@@ -82,6 +100,9 @@ public class ChansonsController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Chanson>> Create([FromBody] Chanson chanson)
     {
+        if (chanson.Note < 1 || chanson.Note > 5)
+            return BadRequest(new { message = "La note doit être comprise entre 1 et 5." });
+
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         chanson.AjouteLe = DateTime.UtcNow;

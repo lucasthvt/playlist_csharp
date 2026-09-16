@@ -75,6 +75,22 @@ public class ChansonsApiTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
+    [Fact(DisplayName = "GET /api/chansons/top/3 → 3 chansons triées par note")]
+    public async Task GetTopChansons_ReturnsThreeSortedChansons()
+    {
+        await _client.PostAsJsonAsync("/api/chansons", new { Titre="Top 5", Artiste="A", Album="A", DureeSecondes=100, Genre="Pop", Annee=2024, Note=5 });
+        await _client.PostAsJsonAsync("/api/chansons", new { Titre="Top 3", Artiste="B", Album="B", DureeSecondes=100, Genre="Pop", Annee=2024, Note=3 });
+        await _client.PostAsJsonAsync("/api/chansons", new { Titre="Top 4", Artiste="C", Album="C", DureeSecondes=100, Genre="Pop", Annee=2024, Note=4 });
+
+        var response = await _client.GetAsync("/api/chansons/top/3");
+        var chansons = await response.Content.ReadFromJsonAsync<List<Chanson>>();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(3, chansons?.Count);
+        Assert.Equal(5, chansons![0].Note);
+        Assert.True(chansons[0].Note >= chansons[1].Note);
+    }
+
     // ── Tests POST ────────────────────────────────────────────────────────────
 
     [Fact(DisplayName = "POST /api/chansons → 201 Created")]
@@ -95,6 +111,18 @@ public class ChansonsApiTests : IClassFixture<WebApplicationFactory<Program>>
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers.Location); // Header Location doit être présent
+    }
+
+    [Fact(DisplayName = "POST /api/chansons avec note invalide → 400")]
+    public async Task PostChanson_NoteInvalide_Returns400()
+    {
+        var response = await _client.PostAsJsonAsync("/api/chansons", new
+        {
+            Titre = "Note invalide", Artiste = "Test", Album = "Test",
+            DureeSecondes = 180, Genre = "Pop", Annee = 2024, Note = 9
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Fact(DisplayName = "POST puis GET → la chanson créée est récupérable")]
